@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Games (GitHub Edition)</title>
+    <title>Meus Jogos (Na Nuvem ☁️)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* O MESMO CSS DE ANTES (Design Bonito) */
+        /* O DESIGN CONTINUA O MESMO (Bonito e Limpo) */
         body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
         .card-formulario { background: white; max-width: 500px; margin: 0 auto 40px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -26,11 +26,13 @@
         .jogo-titulo { font-size: 18px; font-weight: bold; display: block; margin-bottom: 5px; }
         .jogo-detalhes { color: #7f8c8d; font-size: 14px; }
         .acoes { display: flex; gap: 10px; justify-content: flex-end; }
+        /* Aviso de carregando */
+        #loading { text-align: center; color: #7f8c8d; font-style: italic; display: none; }
     </style>
 </head>
 <body>
 
-    <h1>🎮 Gerenciador (Versão Local)</h1>
+    <h1>🎮 Gerenciador Cloud (Firebase)</h1>
 
     <div class="card-formulario">
         <h3 id="titulo-formulario" style="margin-top:0">Novo Jogo</h3>
@@ -38,114 +40,150 @@
             <input type="text" id="titulo" placeholder="Nome do Jogo">
             <input type="number" id="ano" placeholder="Ano">
             <input type="number" id="preco" placeholder="Preço">
-            <button onclick="salvarJogo()" id="btn-salvar">SALVAR JOGO</button>
-            <button onclick="cancelarEdicao()" id="btn-cancelar">CANCELAR EDIÇÃO</button>
+            <button id="btn-salvar">SALVAR NA NUVEM</button>
+            <button id="btn-cancelar">CANCELAR</button>
         </div>
     </div>
 
+    <p id="loading">Carregando dados da nuvem...</p>
     <ul id="lista-jogos"></ul>
 
-    <script>
-        // --- LÓGICA SEM BACKEND (LOCALSTORAGE) ---
-        
+    <script type="module">
+        // 1. IMPORTAR AS BIBLIOTECAS DO GOOGLE
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // 2. SUAS CHAVES (Colei as que você me mandou)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZoIsCavuVM3odtrabUB9GAkaNugbXrfQ",
+            authDomain: "meus-jogos-cloud.firebaseapp.com",
+            projectId: "meus-jogos-cloud",
+            storageBucket: "meus-jogos-cloud.firebasestorage.app",
+            messagingSenderId: "274825808238",
+            appId: "1:274825808238:web:5b8fdd5755120889fa197f"
+        };
+
+        // 3. INICIAR O BANCO DE DADOS
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app); // 'db' é a nossa conexão com a nuvem
+
+        // Variáveis Globais
         let idEdicao = null;
+        let jogosGlobais = []; // Guarda a cópia local para facilitar a edição
 
-        // 1. CARREGAR (Lê do navegador em vez do servidor)
-        function carregarJogos() {
-            // Pega o texto salvo no navegador. Se não tiver nada, cria lista vazia '[]'
-            const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
-            const jogos = JSON.parse(jogosSalvos);
-            
-            const lista = document.getElementById("lista-jogos");
-            lista.innerHTML = "";
+        // --- FUNÇÕES DO SISTEMA ---
 
-            jogos.map(jogo => {
-                lista.innerHTML += `
-                    <li>
-                        <div class="jogo-info">
-                            <span class="jogo-titulo">${jogo.titulo}</span>
-                            <span class="jogo-detalhes">${jogo.ano} • R$ ${jogo.preco},00</span>
-                        </div>
-                        <div class="acoes">
-                            <button class="btn-editar" onclick="botaoEditar(${jogo.id})">EDITAR</button>
-                            <button class="btn-deletar" onclick="deletarJogo(${jogo.id})">EXCLUIR</button>
-                        </div>
-                    </li>
-                `;
-            });
+        // A. CARREGAR (LER DA NUVEM)
+        async function carregarJogos() {
+            document.getElementById("loading").style.display = "block"; // Mostra "Carregando..."
+            const listaHTML = document.getElementById("lista-jogos");
+            listaHTML.innerHTML = "";
+
+            try {
+                // Vai na coleção 'jogos' e pega tudo
+                const querySnapshot = await getDocs(collection(db, "jogos"));
+                
+                jogosGlobais = []; // Limpa a memória local
+
+                querySnapshot.forEach((doc) => {
+                    // O Firebase separa o ID (doc.id) dos Dados (doc.data())
+                    const jogo = { id: doc.id, ...doc.data() };
+                    jogosGlobais.push(jogo);
+
+                    // Desenha na tela
+                    listaHTML.innerHTML += `
+                        <li>
+                            <div class="jogo-info">
+                                <span class="jogo-titulo">${jogo.titulo}</span>
+                                <span class="jogo-detalhes">${jogo.ano} • R$ ${jogo.preco},00</span>
+                            </div>
+                            <div class="acoes">
+                                <button class="btn-editar" data-id="${jogo.id}">EDITAR</button>
+                                <button class="btn-deletar" data-id="${jogo.id}">EXCLUIR</button>
+                            </div>
+                        </li>
+                    `;
+                });
+
+                // RECONECTAR OS BOTÕES (Necessário porque type="module" isola o código)
+                adicionarEventosBotoes();
+
+            } catch (erro) {
+                console.error("Erro ao carregar:", erro);
+                alert("Erro ao conectar no Google. Veja o console.");
+            } finally {
+                document.getElementById("loading").style.display = "none"; // Esconde "Carregando..."
+            }
         }
 
-        // 2. SALVAR (Grava no navegador)
-        function salvarJogo() {
+        // B. SALVAR (CRIAR OU ATUALIZAR)
+        async function salvarJogo() {
             const titulo = document.getElementById("titulo").value;
             const ano = document.getElementById("ano").value;
             const preco = document.getElementById("preco").value;
+            const btnSalvar = document.getElementById("btn-salvar");
 
             if(!titulo || !ano || !preco) return alert("Preencha tudo!");
 
-            // Lê o banco atual
-            const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
-            let jogos = JSON.parse(jogosSalvos);
+            btnSalvar.innerText = "SALVANDO...";
+            btnSalvar.disabled = true; // Trava o botão para não clicar 2x
 
-            if (idEdicao === null) {
-                // CRIAR
-                const novoJogo = { 
-                    id: Date.now(), 
-                    titulo, 
-                    ano: Number(ano), 
-                    preco: Number(preco) 
-                };
-                jogos.push(novoJogo);
-            } else {
-                // EDITAR
-                const indice = jogos.findIndex(j => j.id === idEdicao);
-                if(indice !== -1) {
-                    jogos[indice] = { 
-                        id: idEdicao, 
-                        titulo, 
-                        ano: Number(ano), 
-                        preco: Number(preco) 
-                    };
+            try {
+                if (idEdicao === null) {
+                    // MODO CRIAR (addDoc gera ID automático do Google)
+                    await addDoc(collection(db, "jogos"), {
+                        titulo: titulo,
+                        ano: Number(ano),
+                        preco: Number(preco)
+                    });
+                } else {
+                    // MODO EDITAR (updateDoc precisa do ID específico)
+                    const jogoRef = doc(db, "jogos", idEdicao);
+                    await updateDoc(jogoRef, {
+                        titulo: titulo,
+                        ano: Number(ano),
+                        preco: Number(preco)
+                    });
+                }
+
+                cancelarEdicao(); // Limpa form
+                carregarJogos();  // Atualiza a lista
+
+            } catch (e) {
+                console.error("Erro ao salvar: ", e);
+                alert("Erro ao salvar!");
+            } finally {
+                btnSalvar.disabled = false; // Destrava o botão
+            }
+        }
+
+        // C. DELETAR
+        async function deletarJogo(id) {
+            if(confirm("Tem certeza que quer apagar do servidor?")) {
+                try {
+                    await deleteDoc(doc(db, "jogos", id));
+                    carregarJogos();
+                } catch (e) {
+                    alert("Erro ao deletar");
                 }
             }
-
-            // Salva de volta no LocalStorage (Substitui o arquivo JSON)
-            localStorage.setItem('meusJogos', JSON.stringify(jogos));
-
-            cancelarEdicao();
-            carregarJogos();
         }
 
-        // 3. DELETAR
-        function deletarJogo(id) {
-            if (confirm("Tem certeza?")) {
-                const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
-                let jogos = JSON.parse(jogosSalvos);
+        // D. EDITAR (Preenche o formulário)
+        function prepararEdicao(id) {
+            const jogo = jogosGlobais.find(j => j.id === id);
+            if(jogo) {
+                document.getElementById("titulo").value = jogo.titulo;
+                document.getElementById("ano").value = jogo.ano;
+                document.getElementById("preco").value = jogo.preco;
                 
-                // Filtra
-                const novaLista = jogos.filter(j => j.id !== id);
-                
-                // Salva
-                localStorage.setItem('meusJogos', JSON.stringify(novaLista));
-                
-                carregarJogos();
+                idEdicao = id;
+                document.getElementById("titulo-formulario").innerText = "Editando Jogo";
+                const btn = document.getElementById("btn-salvar");
+                btn.innerText = "ATUALIZAR NUVEM";
+                btn.style.backgroundColor = "#f39c12";
+                document.getElementById("btn-cancelar").style.display = "block";
             }
-        }
-
-        function botaoEditar(id) {
-            const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
-            const jogos = JSON.parse(jogosSalvos);
-            const jogo = jogos.find(j => j.id === id);
-
-            document.getElementById("titulo").value = jogo.titulo;
-            document.getElementById("ano").value = jogo.ano;
-            document.getElementById("preco").value = jogo.preco;
-
-            idEdicao = id;
-            document.getElementById("titulo-formulario").innerText = "Editando Jogo";
-            document.getElementById("btn-salvar").innerText = "ATUALIZAR";
-            document.getElementById("btn-salvar").style.backgroundColor = "#f39c12";
-            document.getElementById("btn-cancelar").style.display = "block";
         }
 
         function cancelarEdicao() {
@@ -153,13 +191,33 @@
             document.getElementById("titulo").value = "";
             document.getElementById("ano").value = "";
             document.getElementById("preco").value = "";
-
+            
             document.getElementById("titulo-formulario").innerText = "Novo Jogo";
-            document.getElementById("btn-salvar").innerText = "SALVAR JOGO";
-            document.getElementById("btn-salvar").style.backgroundColor = "#27ae60";
+            const btn = document.getElementById("btn-salvar");
+            btn.innerText = "SALVAR NA NUVEM";
+            btn.style.backgroundColor = "#27ae60";
             document.getElementById("btn-cancelar").style.display = "none";
         }
 
+        // --- SISTEMA DE EVENTOS (Necessário para Modules) ---
+        // Como usamos type="module", as funções não são globais. 
+        // Precisamos adicionar os cliques manualmente.
+
+        document.getElementById("btn-salvar").addEventListener("click", salvarJogo);
+        document.getElementById("btn-cancelar").addEventListener("click", cancelarEdicao);
+
+        function adicionarEventosBotoes() {
+            // Pega todos os botões de Editar
+            document.querySelectorAll(".btn-editar").forEach(btn => {
+                btn.addEventListener("click", (e) => prepararEdicao(e.target.dataset.id));
+            });
+            // Pega todos os botões de Deletar
+            document.querySelectorAll(".btn-deletar").forEach(btn => {
+                btn.addEventListener("click", (e) => deletarJogo(e.target.dataset.id));
+            });
+        }
+
+        // Iniciar
         carregarJogos();
     </script>
 </body>

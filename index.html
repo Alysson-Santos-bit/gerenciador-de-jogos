@@ -3,57 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus Jogos (Na Nuvem ☁️)</title>
+    <title>Meus Jogos (Login Seguro 🔒)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* O DESIGN CONTINUA O MESMO (Bonito e Limpo) */
+        /* CSS GERAL */
         body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        
+        /* TELA DE LOGIN (Centralizada) */
+        #tela-login {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+            text-align: center;
+        }
+        
+        #btn-google {
+            background-color: white;
+            color: #444;
+            border: 1px solid #ddd;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+        #btn-google:hover { transform: scale(1.05); box-shadow: 0 6px 10px rgba(0,0,0,0.15); }
+
+        /* CABEÇALHO DO USUÁRIO */
+        #user-bar {
+            display: none; /* Escondido até logar */
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; }
+        #btn-sair { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+
+        /* APLICAÇÃO (Escondida até logar) */
+        #app-content { display: none; }
+
+        /* RESTO DO DESIGN (Igual antes) */
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
         .card-formulario { background: white; max-width: 500px; margin: 0 auto 40px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .inputs-group { display: flex; flex-direction: column; gap: 15px; }
-        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: #3498db; outline: none; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
-        button { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: transform 0.1s; }
-        button:active { transform: scale(0.98); }
-        #btn-salvar { background-color: #27ae60; color: white; width: 100%; margin-top: 10px; }
-        #btn-cancelar { background-color: #95a5a6; color: white; width: 100%; display: none; }
-        .btn-editar { background-color: #f39c12; color: white; }
-        .btn-deletar { background-color: #e74c3c; color: white; }
-        #lista-jogos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
-        #lista-jogos li { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; border-left: 5px solid #3498db; }
-        .jogo-info { margin-bottom: 15px; }
-        .jogo-titulo { font-size: 18px; font-weight: bold; display: block; margin-bottom: 5px; }
-        .jogo-detalhes { color: #7f8c8d; font-size: 14px; }
-        .acoes { display: flex; gap: 10px; justify-content: flex-end; }
-        /* Aviso de carregando */
-        #loading { text-align: center; color: #7f8c8d; font-style: italic; display: none; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        button { padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; }
+        #btn-salvar { background-color: #27ae60; color: white; margin-top: 10px; }
+        #btn-cancelar { background-color: #95a5a6; color: white; display: none; }
+        #lista-jogos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        #lista-jogos li { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 5px solid #3498db; }
+        .acoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+        .btn-editar { background: #f39c12; color: white; }
+        .btn-deletar { background: #e74c3c; color: white; }
     </style>
 </head>
 <body>
 
-    <h1>🎮 Gerenciador Cloud (Firebase)</h1>
-
-    <div class="card-formulario">
-        <h3 id="titulo-formulario" style="margin-top:0">Novo Jogo</h3>
-        <div class="inputs-group">
-            <input type="text" id="titulo" placeholder="Nome do Jogo">
-            <input type="number" id="ano" placeholder="Ano">
-            <input type="number" id="preco" placeholder="Preço">
-            <button id="btn-salvar">SALVAR NA NUVEM</button>
-            <button id="btn-cancelar">CANCELAR</button>
-        </div>
+    <div id="tela-login">
+        <h1>🔒 Acesso Restrito</h1>
+        <p>Faça login para salvar seus jogos na nuvem.</p>
+        <button id="btn-google">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20">
+            Entrar com Google
+        </button>
     </div>
 
-    <p id="loading">Carregando dados da nuvem...</p>
-    <ul id="lista-jogos"></ul>
+    <div id="user-bar">
+        <div class="user-info">
+            <img id="foto-user" class="user-avatar" src="">
+            <span id="nome-user">Carregando...</span>
+        </div>
+        <button id="btn-sair">Sair</button>
+    </div>
+
+    <div id="app-content">
+        <h1>Meus Jogos Privados</h1>
+
+        <div class="card-formulario">
+            <h3 id="titulo-formulario" style="margin-top:0">Novo Jogo</h3>
+            <div class="inputs-group">
+                <input type="text" id="titulo" placeholder="Nome do Jogo">
+                <input type="number" id="ano" placeholder="Ano">
+                <input type="number" id="preco" placeholder="Preço">
+                <button id="btn-salvar">SALVAR</button>
+                <button id="btn-cancelar">CANCELAR</button>
+            </div>
+        </div>
+
+        <ul id="lista-jogos"></ul>
+    </div>
 
     <script type="module">
-        // 1. IMPORTAR AS BIBLIOTECAS DO GOOGLE
+        // IMPORTA AUTH E FIRESTORE
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+            from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query } 
+            from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // 2. SUAS CHAVES (Colei as que você me mandou)
+        // SUAS CHAVES (Mantidas)
         const firebaseConfig = {
             apiKey: "AIzaSyCZoIsCavuVM3odtrabUB9GAkaNugbXrfQ",
             authDomain: "meus-jogos-cloud.firebaseapp.com",
@@ -63,61 +123,115 @@
             appId: "1:274825808238:web:5b8fdd5755120889fa197f"
         };
 
-        // 3. INICIAR O BANCO DE DADOS
+        // INICIALIZAÇÃO
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app); // 'db' é a nossa conexão com a nuvem
+        const db = getFirestore(app);
+        const auth = getAuth(app); // O Porteiro
+        const provider = new GoogleAuthProvider(); // O Crachá do Google
 
-        // Variáveis Globais
+        // Variáveis de Estado
+        let usuarioAtual = null; // Vai guardar quem está logado
         let idEdicao = null;
-        let jogosGlobais = []; // Guarda a cópia local para facilitar a edição
+        let jogosGlobais = [];
 
-        // --- FUNÇÕES DO SISTEMA ---
+        // --- AUTENTICAÇÃO (LOGIN/LOGOUT) ---
 
-        // A. CARREGAR (LER DA NUVEM)
+        // 1. Entrar
+        document.getElementById("btn-google").addEventListener("click", async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                // Não precisa fazer nada aqui, o 'onAuthStateChanged' vai perceber a mudança
+            } catch (error) {
+                alert("Erro ao logar: " + error.message);
+            }
+        });
+
+        // 2. Sair
+        document.getElementById("btn-sair").addEventListener("click", () => signOut(auth));
+
+        // 3. O VIGIA (Monitora se entrou ou saiu)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // USUÁRIO ENTROU
+                usuarioAtual = user;
+                
+                // Atualiza a tela
+                document.getElementById("tela-login").style.display = "none";
+                document.getElementById("app-content").style.display = "block";
+                document.getElementById("user-bar").style.display = "flex";
+                
+                // Mostra dados do usuário
+                document.getElementById("nome-user").innerText = user.displayName;
+                document.getElementById("foto-user").src = user.photoURL;
+
+                // Carrega OS JOGOS DELE
+                carregarJogos();
+            } else {
+                // USUÁRIO SAIU
+                usuarioAtual = null;
+                
+                // Reseta a tela
+                document.getElementById("tela-login").style.display = "flex";
+                document.getElementById("app-content").style.display = "none";
+                document.getElementById("user-bar").style.display = "none";
+            }
+        });
+
+        // --- FUNÇÕES DO CRUD (AGORA PRIVADO) ---
+
+        // Helper: Pega a referência da coleção privada do usuário
+        // Em vez de 'jogos', agora é 'usuarios/ID_DO_CARA/jogos'
+        function getCollectionRef() {
+            return collection(db, "usuarios", usuarioAtual.uid, "jogos");
+        }
+
         async function carregarJogos() {
-            document.getElementById("loading").style.display = "block"; // Mostra "Carregando..."
+            if (!usuarioAtual) return; // Segurança extra
+
             const listaHTML = document.getElementById("lista-jogos");
-            listaHTML.innerHTML = "";
+            listaHTML.innerHTML = "<p>Carregando seus dados...</p>";
 
             try {
-                // Vai na coleção 'jogos' e pega tudo
-                const querySnapshot = await getDocs(collection(db, "jogos"));
+                // Usa a nova rota privada
+                const querySnapshot = await getDocs(getCollectionRef());
                 
-                jogosGlobais = []; // Limpa a memória local
+                jogosGlobais = [];
+                listaHTML.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    listaHTML.innerHTML = "<p>Nenhum jogo salvo ainda.</p>";
+                    return;
+                }
 
                 querySnapshot.forEach((doc) => {
-                    // O Firebase separa o ID (doc.id) dos Dados (doc.data())
                     const jogo = { id: doc.id, ...doc.data() };
                     jogosGlobais.push(jogo);
 
-                    // Desenha na tela
                     listaHTML.innerHTML += `
                         <li>
-                            <div class="jogo-info">
-                                <span class="jogo-titulo">${jogo.titulo}</span>
-                                <span class="jogo-detalhes">${jogo.ano} • R$ ${jogo.preco},00</span>
+                            <div style="margin-bottom:10px">
+                                <strong>${jogo.titulo}</strong><br>
+                                <small>${jogo.ano} • R$ ${jogo.preco}</small>
                             </div>
                             <div class="acoes">
-                                <button class="btn-editar" data-id="${jogo.id}">EDITAR</button>
-                                <button class="btn-deletar" data-id="${jogo.id}">EXCLUIR</button>
+                                <button class="btn-editar" data-id="${jogo.id}" style="background:#f39c12; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Editar</button>
+                                <button class="btn-deletar" data-id="${jogo.id}" style="background:#e74c3c; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">X</button>
                             </div>
                         </li>
                     `;
                 });
 
-                // RECONECTAR OS BOTÕES (Necessário porque type="module" isola o código)
                 adicionarEventosBotoes();
 
             } catch (erro) {
-                console.error("Erro ao carregar:", erro);
-                alert("Erro ao conectar no Google. Veja o console.");
-            } finally {
-                document.getElementById("loading").style.display = "none"; // Esconde "Carregando..."
+                console.error(erro);
+                listaHTML.innerHTML = "<p>Erro ao carregar.</p>";
             }
         }
 
-        // B. SALVAR (CRIAR OU ATUALIZAR)
         async function salvarJogo() {
+            if (!usuarioAtual) return;
+
             const titulo = document.getElementById("titulo").value;
             const ano = document.getElementById("ano").value;
             const preco = document.getElementById("preco").value;
@@ -125,65 +239,51 @@
 
             if(!titulo || !ano || !preco) return alert("Preencha tudo!");
 
-            btnSalvar.innerText = "SALVANDO...";
-            btnSalvar.disabled = true; // Trava o botão para não clicar 2x
+            btnSalvar.innerText = "Processando...";
+            btnSalvar.disabled = true;
 
             try {
                 if (idEdicao === null) {
-                    // MODO CRIAR (addDoc gera ID automático do Google)
-                    await addDoc(collection(db, "jogos"), {
-                        titulo: titulo,
-                        ano: Number(ano),
-                        preco: Number(preco)
+                    // CRIAR (Na coleção privada)
+                    await addDoc(getCollectionRef(), {
+                        titulo, ano: Number(ano), preco: Number(preco)
                     });
                 } else {
-                    // MODO EDITAR (updateDoc precisa do ID específico)
-                    const jogoRef = doc(db, "jogos", idEdicao);
+                    // EDITAR (Na coleção privada)
+                    // Caminho: usuarios -> UID -> jogos -> ID_DO_JOGO
+                    const jogoRef = doc(db, "usuarios", usuarioAtual.uid, "jogos", idEdicao);
                     await updateDoc(jogoRef, {
-                        titulo: titulo,
-                        ano: Number(ano),
-                        preco: Number(preco)
+                        titulo, ano: Number(ano), preco: Number(preco)
                     });
                 }
-
-                cancelarEdicao(); // Limpa form
-                carregarJogos();  // Atualiza a lista
-
+                cancelarEdicao();
+                carregarJogos();
             } catch (e) {
-                console.error("Erro ao salvar: ", e);
-                alert("Erro ao salvar!");
+                alert("Erro ao salvar: " + e.message);
             } finally {
-                btnSalvar.disabled = false; // Destrava o botão
+                btnSalvar.disabled = false;
             }
         }
 
-        // C. DELETAR
         async function deletarJogo(id) {
-            if(confirm("Tem certeza que quer apagar do servidor?")) {
-                try {
-                    await deleteDoc(doc(db, "jogos", id));
-                    carregarJogos();
-                } catch (e) {
-                    alert("Erro ao deletar");
-                }
+            if(confirm("Apagar este jogo?")) {
+                // Caminho: usuarios -> UID -> jogos -> ID_DO_JOGO
+                await deleteDoc(doc(db, "usuarios", usuarioAtual.uid, "jogos", id));
+                carregarJogos();
             }
         }
 
-        // D. EDITAR (Preenche o formulário)
+        // --- EVENTOS E UI ---
+        
         function prepararEdicao(id) {
             const jogo = jogosGlobais.find(j => j.id === id);
-            if(jogo) {
-                document.getElementById("titulo").value = jogo.titulo;
-                document.getElementById("ano").value = jogo.ano;
-                document.getElementById("preco").value = jogo.preco;
-                
-                idEdicao = id;
-                document.getElementById("titulo-formulario").innerText = "Editando Jogo";
-                const btn = document.getElementById("btn-salvar");
-                btn.innerText = "ATUALIZAR NUVEM";
-                btn.style.backgroundColor = "#f39c12";
-                document.getElementById("btn-cancelar").style.display = "block";
-            }
+            document.getElementById("titulo").value = jogo.titulo;
+            document.getElementById("ano").value = jogo.ano;
+            document.getElementById("preco").value = jogo.preco;
+            
+            idEdicao = id;
+            document.getElementById("btn-salvar").innerText = "ATUALIZAR";
+            document.getElementById("btn-cancelar").style.display = "block";
         }
 
         function cancelarEdicao() {
@@ -191,34 +291,21 @@
             document.getElementById("titulo").value = "";
             document.getElementById("ano").value = "";
             document.getElementById("preco").value = "";
-            
-            document.getElementById("titulo-formulario").innerText = "Novo Jogo";
-            const btn = document.getElementById("btn-salvar");
-            btn.innerText = "SALVAR NA NUVEM";
-            btn.style.backgroundColor = "#27ae60";
+            document.getElementById("btn-salvar").innerText = "SALVAR";
             document.getElementById("btn-cancelar").style.display = "none";
         }
-
-        // --- SISTEMA DE EVENTOS (Necessário para Modules) ---
-        // Como usamos type="module", as funções não são globais. 
-        // Precisamos adicionar os cliques manualmente.
 
         document.getElementById("btn-salvar").addEventListener("click", salvarJogo);
         document.getElementById("btn-cancelar").addEventListener("click", cancelarEdicao);
 
         function adicionarEventosBotoes() {
-            // Pega todos os botões de Editar
             document.querySelectorAll(".btn-editar").forEach(btn => {
                 btn.addEventListener("click", (e) => prepararEdicao(e.target.dataset.id));
             });
-            // Pega todos os botões de Deletar
             document.querySelectorAll(".btn-deletar").forEach(btn => {
                 btn.addEventListener("click", (e) => deletarJogo(e.target.dataset.id));
             });
         }
-
-        // Iniciar
-        carregarJogos();
     </script>
 </body>
 </html>

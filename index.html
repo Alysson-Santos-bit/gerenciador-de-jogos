@@ -3,174 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Games</title>
+    <title>Loja de Games (GitHub Edition)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- ESTILOS GERAIS (O Fundo) --- */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f2f5; /* Cinza bem clarinho moderno */
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-
-        /* --- O CARD DO FORMULÁRIO --- */
-        .card-formulario {
-            background: white;
-            max-width: 500px;
-            margin: 0 auto 40px auto; /* Centraliza na tela */
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sombra suave */
-        }
-
-        .inputs-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px; /* Espaço entre os inputs */
-        }
-
-        input {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            border-color: #3498db; /* Azul ao clicar */
-            outline: none;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-        }
-
-        /* --- BOTÕES --- */
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            transition: transform 0.1s, filter 0.2s;
-        }
-
-        button:active {
-            transform: scale(0.98); /* Efeito de clique */
-        }
-
-        #btn-salvar {
-            background-color: #27ae60; /* Verde */
-            color: white;
-            width: 100%;
-            margin-top: 10px;
-        }
-        #btn-salvar:hover { background-color: #219150; }
-
-        #btn-cancelar {
-            background-color: #95a5a6; /* Cinza */
-            color: white;
-            width: 100%;
-        }
-
-        .btn-editar {
-            background-color: #f39c12; /* Laranja */
-            color: white;
-        }
-
-        .btn-deletar {
-            background-color: #e74c3c; /* Vermelho */
-            color: white;
-        }
-
-        /* --- LISTA DE JOGOS (Cards) --- */
-        #lista-jogos {
-            list-style: none; /* Tira as bolinhas */
-            padding: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsivo */
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        #lista-jogos li {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-left: 5px solid #3498db; /* Detalhe azul na esquerda */
-        }
-
-        .jogo-info {
-            margin-bottom: 15px;
-        }
-
-        .jogo-titulo {
-            font-size: 18px;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .jogo-detalhes {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        .acoes {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end; /* Botões à direita */
-        }
-
+        /* O MESMO CSS DE ANTES (Design Bonito) */
+        body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        .card-formulario { background: white; max-width: 500px; margin: 0 auto 40px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .inputs-group { display: flex; flex-direction: column; gap: 15px; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: 0.3s; }
+        input:focus { border-color: #3498db; outline: none; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
+        button { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: transform 0.1s; }
+        button:active { transform: scale(0.98); }
+        #btn-salvar { background-color: #27ae60; color: white; width: 100%; margin-top: 10px; }
+        #btn-cancelar { background-color: #95a5a6; color: white; width: 100%; display: none; }
+        .btn-editar { background-color: #f39c12; color: white; }
+        .btn-deletar { background-color: #e74c3c; color: white; }
+        #lista-jogos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+        #lista-jogos li { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; border-left: 5px solid #3498db; }
+        .jogo-info { margin-bottom: 15px; }
+        .jogo-titulo { font-size: 18px; font-weight: bold; display: block; margin-bottom: 5px; }
+        .jogo-detalhes { color: #7f8c8d; font-size: 14px; }
+        .acoes { display: flex; gap: 10px; justify-content: flex-end; }
     </style>
 </head>
 <body>
 
-    <h1>🎮 Gerenciador de Games</h1>
+    <h1>🎮 Gerenciador (Versão Local)</h1>
 
     <div class="card-formulario">
         <h3 id="titulo-formulario" style="margin-top:0">Novo Jogo</h3>
-        
         <div class="inputs-group">
-            <input type="text" id="titulo" placeholder="Nome do Jogo (ex: God of War)">
-            <input type="number" id="ano" placeholder="Ano de Lançamento">
-            <input type="number" id="preco" placeholder="Preço (R$)">
-            
+            <input type="text" id="titulo" placeholder="Nome do Jogo">
+            <input type="number" id="ano" placeholder="Ano">
+            <input type="number" id="preco" placeholder="Preço">
             <button onclick="salvarJogo()" id="btn-salvar">SALVAR JOGO</button>
-            <button onclick="cancelarEdicao()" id="btn-cancelar" style="display:none;">CANCELAR EDIÇÃO</button>
+            <button onclick="cancelarEdicao()" id="btn-cancelar">CANCELAR EDIÇÃO</button>
         </div>
     </div>
 
-    <ul id="lista-jogos">
-        </ul>
+    <ul id="lista-jogos"></ul>
 
     <script>
-        // --- A MESMA LÓGICA DE ANTES (NÃO MUDOU NADA IMPORTANTE) ---
+        // --- LÓGICA SEM BACKEND (LOCALSTORAGE) ---
         
         let idEdicao = null;
-        let jogosGlobais = [];
 
-        async function carregarJogos() {
-            const resposta = await fetch("http://localhost:3000/jogos");
-            jogosGlobais = await resposta.json();
+        // 1. CARREGAR (Lê do navegador em vez do servidor)
+        function carregarJogos() {
+            // Pega o texto salvo no navegador. Se não tiver nada, cria lista vazia '[]'
+            const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
+            const jogos = JSON.parse(jogosSalvos);
             
             const lista = document.getElementById("lista-jogos");
             lista.innerHTML = "";
 
-            jogosGlobais.map(jogo => {
+            jogos.map(jogo => {
                 lista.innerHTML += `
                     <li>
                         <div class="jogo-info">
@@ -186,43 +75,76 @@
             });
         }
 
-        async function salvarJogo() {
+        // 2. SALVAR (Grava no navegador)
+        function salvarJogo() {
             const titulo = document.getElementById("titulo").value;
             const ano = document.getElementById("ano").value;
             const preco = document.getElementById("preco").value;
 
             if(!titulo || !ano || !preco) return alert("Preencha tudo!");
 
-            const dados = { titulo, ano: Number(ano), preco: Number(preco) };
+            // Lê o banco atual
+            const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
+            let jogos = JSON.parse(jogosSalvos);
 
             if (idEdicao === null) {
-                await fetch("http://localhost:3000/jogos", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(dados)
-                });
+                // CRIAR
+                const novoJogo = { 
+                    id: Date.now(), 
+                    titulo, 
+                    ano: Number(ano), 
+                    preco: Number(preco) 
+                };
+                jogos.push(novoJogo);
             } else {
-                await fetch("http://localhost:3000/jogos/" + idEdicao, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(dados)
-                });
+                // EDITAR
+                const indice = jogos.findIndex(j => j.id === idEdicao);
+                if(indice !== -1) {
+                    jogos[indice] = { 
+                        id: idEdicao, 
+                        titulo, 
+                        ano: Number(ano), 
+                        preco: Number(preco) 
+                    };
+                }
             }
+
+            // Salva de volta no LocalStorage (Substitui o arquivo JSON)
+            localStorage.setItem('meusJogos', JSON.stringify(jogos));
 
             cancelarEdicao();
             carregarJogos();
         }
 
+        // 3. DELETAR
+        function deletarJogo(id) {
+            if (confirm("Tem certeza?")) {
+                const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
+                let jogos = JSON.parse(jogosSalvos);
+                
+                // Filtra
+                const novaLista = jogos.filter(j => j.id !== id);
+                
+                // Salva
+                localStorage.setItem('meusJogos', JSON.stringify(novaLista));
+                
+                carregarJogos();
+            }
+        }
+
         function botaoEditar(id) {
-            const jogo = jogosGlobais.find(j => j.id === id);
+            const jogosSalvos = localStorage.getItem('meusJogos') || '[]';
+            const jogos = JSON.parse(jogosSalvos);
+            const jogo = jogos.find(j => j.id === id);
+
             document.getElementById("titulo").value = jogo.titulo;
             document.getElementById("ano").value = jogo.ano;
             document.getElementById("preco").value = jogo.preco;
 
             idEdicao = id;
-            document.getElementById("titulo-formulario").innerText = "Editando: " + jogo.titulo;
+            document.getElementById("titulo-formulario").innerText = "Editando Jogo";
             document.getElementById("btn-salvar").innerText = "ATUALIZAR";
-            document.getElementById("btn-salvar").style.backgroundColor = "#f39c12"; // Botão fica laranja
+            document.getElementById("btn-salvar").style.backgroundColor = "#f39c12";
             document.getElementById("btn-cancelar").style.display = "block";
         }
 
@@ -234,15 +156,8 @@
 
             document.getElementById("titulo-formulario").innerText = "Novo Jogo";
             document.getElementById("btn-salvar").innerText = "SALVAR JOGO";
-            document.getElementById("btn-salvar").style.backgroundColor = "#27ae60"; // Volta a ser verde
+            document.getElementById("btn-salvar").style.backgroundColor = "#27ae60";
             document.getElementById("btn-cancelar").style.display = "none";
-        }
-
-        async function deletarJogo(id) {
-            if (confirm("Tem certeza que deseja excluir?")) {
-                await fetch("http://localhost:3000/jogos/" + id, { method: "DELETE" });
-                carregarJogos();
-            }
         }
 
         carregarJogos();
